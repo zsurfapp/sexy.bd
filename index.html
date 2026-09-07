@@ -233,10 +233,15 @@
 
     const state = { videos: [], query: '', sort: 'new', worker: WORKER };
 
-    // Thumbnails are proxied through the Worker (their CDN hotlink-blocks Referer != theyarehuge.com)
+    // HD thumbnails from Worker (preview.jpg is ~1690x864 actual, much sharper than 320x180)
     function thumbUrl(v) {
       const bucket = Math.floor(parseInt(v.id, 10) / 1000) * 1000;
-      return `${state.worker}/api/thumb/${bucket}/${v.id}/320x180/1.jpg`;
+      return `${state.worker}/api/thumb/${bucket}/${v.id}/hd/1.jpg`;
+    }
+    // Fallback: standard 640x360 thumb if HD not available
+    function thumbFallback(v) {
+      const bucket = Math.floor(parseInt(v.id, 10) / 1000) * 1000;
+      return `${state.worker}/api/thumb/${bucket}/${v.id}/640x360/1.jpg`;
     }
 
     // Streamed through Worker (signed URL behind the scenes)
@@ -291,7 +296,8 @@
 
       grid.innerHTML = list.map((v, i) => `
         <div class="card" data-i="${i}" title="${(v.title || 'video '+v.id).replace(/"/g,'&quot;')}">
-          <img src="${thumbUrl(v)}" loading="lazy" alt="${(v.title || 'video '+v.id).replace(/"/g,'&quot;')}" />
+          <img src="${thumbUrl(v)}" loading="lazy" alt="${(v.title || 'video '+v.id).replace(/"/g,'&quot;')}"
+               onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='${thumbFallback(v)}'}" />
           <div class="badge">${v.quality || '720'}p</div>
           ${v.duration ? `<div class="duration">${fmtDur(v.duration)}</div>` : ''}
           <div class="play-icon">▶</div>
@@ -389,3 +395,4 @@
 </body>
 </html>deploy stamp 1788797784
 deploy 1788798640
+deploy HD thumbs 1788799006
