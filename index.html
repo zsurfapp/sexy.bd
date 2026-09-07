@@ -394,8 +394,9 @@
     function initAds() {
       // Render native banner ad slots first
       // (happens inside render() above via injectAdsterra())
-      // Then load Social Bar
+      // Then load Social Bar + Popunder
       injectSocialBar();
+      injectPopunder();
     }
 
     // Adsterra Native Banner — same zone ID on every container, invoke.js fills them all
@@ -417,6 +418,17 @@
       s.src = 'https://pl31233688.profitableratecpmnetwork.com/84/df/47/84df476cc30f67daa1daf2ecec11a31f.js';
       s.setAttribute('data-adsterra-social', '1');
       document.body.appendChild(s);
+    }
+
+    // Adsterra Popunder — opens background tab on page load
+    function injectPopunder() {
+      if (document.querySelector('script[data-adsterra-popunder]')) return;
+      const s = document.createElement('script');
+      s.async = true;
+      s.src = 'https://pl31233686.profitableratecpmnetwork.com/0a/30/41/0a304128ddc8430364138638509b06b7.js';
+      s.setAttribute('data-adsterra-popunder', '1');
+      // Load after a slight delay so first paint is not interrupted
+      setTimeout(() => document.body.appendChild(s), 1500);
     }
 
     let st;
