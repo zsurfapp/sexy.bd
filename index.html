@@ -152,8 +152,10 @@
     }
     .card:hover .title-bar { opacity: 1; }
 
-    /* === Video player — uses CSS fullscreen simulation (no native fullscreen API) === */
-    /* This avoids browser's "Press ESC to exit" / "Drag down" toast messages */
+    /* === Video player — uses native Fullscreen API for immersive experience === */
+    /* Note: Browsers may show brief overlay ("Press ESC to exit", "Drag down to exit")
+       when entering native fullscreen — this is browser-controlled UX and cannot
+       be suppressed via web code. We accept this in exchange for true fullscreen. */
     video.player {
       position: fixed;
       top: 0; left: 0;
@@ -255,7 +257,14 @@
       player.src = url;
       player.classList.add('active');
       player.muted = false;
-      // No fullscreen API call → no browser toast messages
+      // Try native fullscreen first (immersive), fall back to CSS-based if denied
+      const fsFn = player.requestFullscreen
+                || player.webkitRequestFullscreen
+                || player.mozRequestFullScreen
+                || player.msRequestFullscreen;
+      if (fsFn) {
+        try { fsFn.call(player); } catch (e) {}
+      }
       const p = player.play();
       if (p && p.catch) {
         p.catch(() => { player.controls = true; });
@@ -267,6 +276,14 @@
       player.removeAttribute('src');
       try { player.load(); } catch (e) {}
       player.classList.remove('active');
+      // Exit native fullscreen if active
+      const exitFn = document.exitFullscreen
+                  || document.webkitExitFullscreen
+                  || document.mozCancelFullScreen
+                  || document.msExitFullscreen;
+      if (exitFn && (document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement)) {
+        try { exitFn.call(document); } catch (e) {}
+      }
     }
 
     // Click on player toggles play/pause
@@ -277,6 +294,19 @@
         player.pause();
       }
     });
+
+    // Stop video when user exits native fullscreen (via ESC or browser button)
+    function fsChange() {
+      const inFs = document.fullscreenElement
+                || document.webkitFullscreenElement
+                || document.mozFullScreenElement
+                || document.msFullscreenElement;
+      if (!inFs && player.classList.contains('active')) stopVideo();
+    }
+    document.addEventListener('fullscreenchange', fsChange);
+    document.addEventListener('webkitfullscreenchange', fsChange);
+    document.addEventListener('mozfullscreenchange', fsChange);
+    document.addEventListener('MSFullscreenChange', fsChange);
 
     // ESC always stops video if active
     document.addEventListener('keydown', (e) => {
