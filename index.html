@@ -346,14 +346,18 @@
       // tree = { files: [{ name, type, size, time }] }
       const vids = (tree.files || [])
         .filter(f => f.type === 'file' && VIDEO_EXT.test(f.name))
-        .filter(f => !f.name.toLowerCase().endsWith('.sample.mp4'))
-        .map(f => ({
-          name: f.name,
-          path: '/' + f.name,                 // jsDelivr uses repo-root-relative
-          url: `${BASE}${f.name}`,
-          size: f.size,
-          mtime: f.time,
-        }));
+        .map(f => {
+          // f.name comes back as "/videos/clip.mp4" — strip leading slash for basename + use full path
+          const fullPath = f.name.startsWith('/') ? f.name : '/' + f.name;
+          const basename = fullPath.split('/').pop();
+          return {
+            name: basename,
+            path: fullPath,
+            url: `${BASE}${fullPath}`,
+            size: f.size,
+            mtime: f.time,
+          };
+        });
       return vids;
     }
 
