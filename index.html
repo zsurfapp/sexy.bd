@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0f0c29" />
-  <meta name="description" content="sexy.bd — open video library powered by jsDelivr CDN + GitHub. Stream without redirects." />
+  <meta name="description" content="sexy.bd — video library, same as theyarehuge but hosted on GitHub Pages." />
   <meta name="rating" content="adult" />
   <meta property="og:title" content="sexy.bd — Video Library" />
   <meta property="og:type" content="website" />
@@ -12,13 +12,9 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
-      --bg-1: #0f0c29;
-      --bg-2: #302b63;
-      --bg-3: #24243e;
-      --accent: #e34449;
-      --accent-2: #ee0979;
-      --text: #fff;
-      --muted: #aaa;
+      --bg-1: #0f0c29; --bg-2: #302b63; --bg-3: #24243e;
+      --accent: #e34449; --accent-2: #ee0979;
+      --text: #fff; --muted: #aaa;
       --card: rgba(255, 255, 255, 0.06);
       --card-hover: rgba(255, 255, 255, 0.12);
       --line: rgba(255, 255, 255, 0.08);
@@ -33,239 +29,128 @@
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
-
-    /* Header */
     header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
       background: rgba(15, 12, 41, 0.7);
       border-bottom: 1px solid var(--line);
       padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      gap: 18px;
+      display: flex; align-items: center; gap: 18px;
     }
     .logo {
-      font-size: 1.6rem;
-      font-weight: 800;
+      font-size: 1.6rem; font-weight: 800;
       background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      letter-spacing: -1px;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: -1px;
       text-decoration: none;
     }
-    .search {
-      flex: 1;
-      max-width: 540px;
-      position: relative;
-    }
+    .search { flex: 1; max-width: 540px; position: relative; }
     .search input {
-      width: 100%;
-      padding: 10px 14px 10px 38px;
-      border-radius: 999px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-      font-size: 0.95rem;
-      outline: none;
-      transition: border-color .2s;
+      width: 100%; padding: 10px 14px 10px 38px;
+      border-radius: 999px; border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.05); color: var(--text);
+      font-size: 0.95rem; outline: none; transition: border-color .2s;
     }
     .search input:focus { border-color: var(--accent); }
     .search::before {
-      content: "🔍";
-      position: absolute;
-      left: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      font-size: 0.9rem;
-      opacity: 0.6;
+      content: "🔍"; position: absolute; left: 12px; top: 50%;
+      transform: translateY(-50%); font-size: 0.9rem; opacity: 0.6;
     }
-    .stats {
-      margin-left: auto;
-      font-size: 0.85rem;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    /* Main */
+    .stats { margin-left: auto; font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
     main { max-width: 1400px; margin: 0 auto; padding: 28px 20px 60px; }
     .toolbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 22px;
-      flex-wrap: wrap;
-      gap: 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 22px; flex-wrap: wrap; gap: 12px;
     }
     .toolbar h2 { font-size: 1.15rem; font-weight: 600; color: var(--muted); }
-    .toolbar select {
-      padding: 8px 14px;
-      border-radius: 8px;
-      border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.05);
-      color: var(--text);
-      font-size: 0.9rem;
-      cursor: pointer;
+    .toolbar select, .toolbar button {
+      padding: 8px 14px; border-radius: 8px; border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.05); color: var(--text);
+      font-size: 0.9rem; cursor: pointer;
     }
-
-    /* Grid */
     .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 14px;
+      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
     }
     .card {
-      position: relative;
-      background: var(--card);
-      border-radius: 10px;
-      overflow: hidden;
-      cursor: pointer;
+      position: relative; background: var(--card);
+      border-radius: 10px; overflow: hidden; cursor: pointer;
       transition: transform .25s ease, background .25s ease;
-      aspect-ratio: 16 / 9;
-      border: 1px solid transparent;
+      aspect-ratio: 16 / 9; border: 1px solid transparent;
     }
     .card:hover { transform: translateY(-3px); background: var(--card-hover); border-color: var(--accent); }
-    .card video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      background: #000;
-      display: block;
+    .card img, .card video {
+      width: 100%; height: 100%; object-fit: cover; background: #000; display: block;
     }
     .card .meta {
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      position: absolute; left: 0; right: 0; bottom: 0;
       padding: 22px 10px 8px;
       background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.85));
-      font-size: 0.78rem;
-      line-height: 1.25;
+      font-size: 0.78rem; line-height: 1.25;
     }
-    .card .meta .title {
-      font-weight: 600;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .card .meta .info {
-      color: var(--muted);
-      font-size: 0.7rem;
-      margin-top: 2px;
-    }
+    .card .meta .title { font-weight: 600; }
+    .card .meta .info { color: var(--muted); font-size: 0.7rem; margin-top: 2px; }
     .card .badge {
-      position: absolute;
-      top: 6px;
-      left: 6px;
-      background: rgba(0, 0, 0, 0.65);
-      color: var(--text);
-      font-size: 0.65rem;
-      padding: 3px 6px;
-      border-radius: 4px;
-      font-weight: 600;
+      position: absolute; top: 6px; left: 6px;
+      background: rgba(0, 0, 0, 0.65); color: var(--text);
+      font-size: 0.65rem; padding: 3px 6px; border-radius: 4px; font-weight: 600;
     }
+    .card .play-icon {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0, 0, 0, 0.35); opacity: 0; transition: opacity .2s;
+      font-size: 3rem; pointer-events: none;
+    }
+    .card:hover .play-icon { opacity: 1; }
 
-    /* Player modal */
     .modal {
-      position: fixed;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.92);
-      z-index: 200;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
+      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
+      z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
     }
     .modal.open { display: flex; }
-    .modal-content {
-      width: 100%;
-      max-width: 1200px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .modal video {
-      width: 100%;
-      max-height: 80vh;
-      background: #000;
-      border-radius: 8px;
-    }
+    .modal-content { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 12px; }
+    .modal video { width: 100%; max-height: 80vh; background: #000; border-radius: 8px; }
     .modal-meta {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 4px 4px 0;
-      gap: 12px;
-      flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 4px 0; gap: 12px; flex-wrap: wrap;
     }
     .modal-meta .title { font-weight: 600; font-size: 1rem; }
     .modal-meta .info { color: var(--muted); font-size: 0.85rem; }
     .modal-meta .actions { display: flex; gap: 8px; }
     .modal-meta a, .modal-meta button {
-      padding: 6px 14px;
-      border-radius: 6px;
-      background: var(--card);
-      color: var(--text);
-      border: 1px solid var(--line);
-      font-size: 0.85rem;
-      cursor: pointer;
-      text-decoration: none;
-      transition: background .2s;
+      padding: 6px 14px; border-radius: 6px; background: var(--card);
+      color: var(--text); border: 1px solid var(--line);
+      font-size: 0.85rem; cursor: pointer; text-decoration: none; transition: background .2s;
     }
     .modal-meta a:hover, .modal-meta button:hover { background: var(--card-hover); }
     .modal .close {
-      position: absolute;
-      top: 14px;
-      right: 14px;
-      width: 38px;
-      height: 38px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15);
-      border: none;
-      color: var(--text);
-      font-size: 1.4rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      position: absolute; top: 14px; right: 14px;
+      width: 38px; height: 38px; border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15); border: none; color: var(--text);
+      font-size: 1.4rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
     }
     .modal .close:hover { background: rgba(255, 255, 255, 0.25); }
 
-    /* States */
     .empty, .loading, .error {
-      grid-column: 1 / -1;
-      padding: 60px 20px;
-      text-align: center;
-      color: var(--muted);
+      grid-column: 1 / -1; padding: 60px 20px;
+      text-align: center; color: var(--muted);
     }
     .loading { display: flex; flex-direction: column; align-items: center; gap: 14px; }
     .spinner {
-      width: 36px;
-      height: 36px;
+      width: 36px; height: 36px;
       border: 3px solid rgba(255, 255, 255, 0.15);
       border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin .8s linear infinite;
+      border-radius: 50%; animation: spin .8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
 
     footer {
-      border-top: 1px solid var(--line);
-      padding: 20px;
-      text-align: center;
-      font-size: 0.8rem;
-      color: var(--muted);
+      border-top: 1px solid var(--line); padding: 20px;
+      text-align: center; font-size: 0.8rem; color: var(--muted);
     }
     footer a { color: var(--muted); text-decoration: underline; }
-
     @media (max-width: 600px) {
       header { padding: 10px 14px; gap: 10px; flex-wrap: wrap; }
-      .logo { font-size: 1.3rem; }
-      .stats { display: none; }
+      .logo { font-size: 1.3rem; } .stats { display: none; }
       .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
       .modal { padding: 10px; }
     }
@@ -275,27 +160,31 @@
   <header>
     <a href="/" class="logo">sexy.bd</a>
     <div class="search">
-      <input id="q" type="search" placeholder="Search videos…" autocomplete="off" />
+      <input id="q" type="search" placeholder="Search…" autocomplete="off" />
     </div>
     <div class="stats" id="stats">loading…</div>
   </header>
 
   <main>
     <div class="toolbar">
-      <h2 id="headerTitle">All videos</h2>
-      <select id="sort">
-        <option value="name">Sort: Name (A→Z)</option>
-        <option value="name-desc">Sort: Name (Z→A)</option>
-        <option value="new">Sort: Newest first</option>
-      </select>
+      <h2 id="headerTitle">Popular videos</h2>
+      <div style="display:flex; gap:8px;">
+        <select id="sort">
+          <option value="new">Sort: Newest IDs first</option>
+          <option value="old">Sort: Oldest IDs first</option>
+        </select>
+        <button id="refresh" title="Refresh manifest">⟳ Refresh</button>
+      </div>
     </div>
     <div id="grid" class="grid">
-      <div class="loading"><div class="spinner"></div>Loading video list from jsDelivr CDN…</div>
+      <div class="loading"><div class="spinner"></div>Loading popular videos from Worker…</div>
     </div>
   </main>
 
   <footer>
-    All videos served via <a href="https://www.jsdelivr.com" target="_blank" rel="noopener">jsDelivr</a> ·
+    Videos proxied via <a href="#" id="workerLink" target="_blank" rel="noopener">Cloudflare Worker</a> ·
+    Mirror of <a href="https://www.theyarehuge.com/" target="_blank" rel="noopener">theyarehuge</a>
+    (storage CDN: AHA / AdvancedHosters) ·
     Source on <a href="https://github.com/zsurfapp/sexy.bd" target="_blank" rel="noopener">GitHub</a>
   </footer>
 
@@ -319,97 +208,76 @@
 
   <script>
     /* ============================================================
-       sexy.bd — Static video library
-       GitHub: zsurfapp/sexy.bd  |  Site: sexy.linkpc.net
-       Source of truth = GitHub repo `videos/` folder.
-       Videos served via jsDelivr CDN (no GitHub raw rate-limit).
+       sexy.bd — Video Library
+       Front-end served by GitHub Pages (sexy.linkpc.net).
+       Videos are reverse-proxied through a Cloudflare Worker
+       that resolves signed URLs from vcdn.theyarehuge.com.
        ============================================================ */
 
-    const REPO = 'zsurfapp/sexy.bd';
-    const BRANCH = 'main';
-    const BASE = `https://cdn.jsdelivr.net/gh/${REPO}@${BRANCH}`;
-    const API = `https://data.jsdelivr.com/v1/package/gh/${REPO}@${BRANCH}/flat`;
-    const VIDEO_EXT = /\.(mp4|webm|mov|m4v)$/i;
+    // Worker URL — set this to your deployed Worker
+    // Format: https://<your-worker>.workers.dev
+    const WORKER = (new URLSearchParams(location.search).get('worker')) ||
+                    localStorage.getItem('sexy.worker') ||
+                    // Set your deployed Worker URL here as default:
+                    '';
 
-    const state = {
-      videos: [],     // [{ name, path, size, mtime }]
-      filtered: [],
-      query: '',
-      sort: 'name',
-    };
+    // Persist for next visit
+    if (WORKER) localStorage.setItem('sexy.worker', WORKER);
 
-    /* ---------- Data loader ---------- */
+    const state = { videos: [], query: '', sort: 'new', worker: WORKER };
+
+    // Thumbnails come from the public CDN (no auth, no signing)
+    function thumbUrl(v) {
+      const bucket = Math.floor(parseInt(v.id, 10) / 1000) * 1000;
+      return `https://cdn.theyarehuge.com/contents/videos_screenshots/${bucket}/${v.id}/320x180/1.jpg`;
+    }
+
+    // Streamed through Worker (signed URL behind the scenes)
+    function streamUrl(v) {
+      return `${state.worker}/api/stream/${v.id}.mp4`;
+    }
+
     async function loadManifest() {
-      const res = await fetch(API);
-      if (!res.ok) throw new Error(`jsDelivr API ${res.status}`);
-      const tree = await res.json();
-      // tree = { files: [{ name, type, size, time }] }
-      const vids = (tree.files || [])
-        .filter(f => f.type === 'file' && VIDEO_EXT.test(f.name))
-        .map(f => {
-          // f.name comes back as "/videos/clip.mp4" — strip leading slash for basename + use full path
-          const fullPath = f.name.startsWith('/') ? f.name : '/' + f.name;
-          const basename = fullPath.split('/').pop();
-          return {
-            name: basename,
-            path: fullPath,
-            url: `${BASE}${fullPath}`,
-            size: f.size,
-            mtime: f.time,
-          };
-        });
-      return vids;
-    }
-
-    /* ---------- Render ---------- */
-    function fmtSize(b) {
-      if (!b && b !== 0) return '?';
-      const u = ['B', 'KB', 'MB', 'GB'];
-      let i = 0, n = b;
-      while (n >= 1024 && i < u.length - 1) { n /= 1024; i++; }
-      return `${n.toFixed(i ? 1 : 0)} ${u[i]}`;
-    }
-    function fmtTime(t) {
-      if (!t) return '';
-      try { return new Date(t).toISOString().slice(0, 10); } catch { return ''; }
-    }
-    function titleFromName(n) {
-      return n.replace(VIDEO_EXT, '')
-              .replace(/[_\-.]+/g, ' ')
-              .replace(/\s+/g, ' ')
-              .trim();
+      if (!state.worker) {
+        throw new Error('Worker URL not configured. Append ?worker=https://your-worker.workers.dev to this URL or set localStorage.sexy.worker');
+      }
+      const r = await fetch(`${state.worker}/api/manifest`);
+      if (!r.ok) throw new Error(`Worker ${r.status}`);
+      const d = await r.json();
+      return d.videos || [];
     }
 
     function render() {
       const grid = document.getElementById('grid');
       const headerTitle = document.getElementById('headerTitle');
-      const q = state.query.toLowerCase();
-      let list = state.videos.filter(v =>
-        !q || titleFromName(v.name).toLowerCase().includes(q) || v.name.toLowerCase().includes(q)
-      );
+      let list = state.videos.slice();
 
       // Sort
-      if (state.sort === 'name') list.sort((a, b) => a.name.localeCompare(b.name));
-      else if (state.sort === 'name-desc') list.sort((a, b) => b.name.localeCompare(a.name));
-      else if (state.sort === 'new') list.sort((a, b) => (b.mtime || 0) - (a.mtime || 0));
+      if (state.sort === 'new') list.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+      else list.sort((a, b) => parseInt(a.id) - parseInt(b.id));
 
-      state.filtered = list;
-      headerTitle.textContent = q
-        ? `${list.length} result${list.length !== 1 ? 's' : ''} for "${state.query}"`
-        : `All videos (${list.length})`;
+      // Filter
+      if (state.query) {
+        const q = state.query.toLowerCase();
+        list = list.filter(v => v.id.includes(q));
+      }
+
+      headerTitle.textContent = `Popular videos (${list.length} / ${state.videos.length})`;
+      document.getElementById('stats').textContent = `${state.videos.length} videos`;
 
       if (!list.length) {
-        grid.innerHTML = `<div class="empty">No videos found. ${q ? 'Try a different search.' : 'Add .mp4 files to the videos/ folder.'}</div>`;
+        grid.innerHTML = `<div class="empty">No videos match.</div>`;
         return;
       }
 
       grid.innerHTML = list.map((v, i) => `
-        <div class="card" data-i="${i}" title="${titleFromName(v.name)}">
-          <video src="${v.url}#t=0.1" preload="metadata" muted></video>
-          <div class="badge">${fmtSize(v.size)}</div>
+        <div class="card" data-i="${i}" title="video ${v.id}">
+          <img src="${thumbUrl(v)}" loading="lazy" alt="video ${v.id}" />
+          <div class="badge">${v.id}</div>
+          <div class="play-icon">▶</div>
           <div class="meta">
-            <div class="title">${titleFromName(v.name)}</div>
-            <div class="info">${fmtTime(v.mtime) || 'no date'}</div>
+            <div class="title">Video #${v.id}</div>
+            <div class="info">md5 ${v.md5.slice(0,8)}… · bucket ${Math.floor(v.id/1000)*1000}</div>
           </div>
         </div>
       `).join('');
@@ -422,19 +290,19 @@
       });
     }
 
-    /* ---------- Modal player ---------- */
     function openModal(v) {
       const m = document.getElementById('modal');
       const p = document.getElementById('player');
-      document.getElementById('mTitle').textContent = titleFromName(v.name);
-      document.getElementById('mInfo').textContent = `${fmtSize(v.size)} · ${fmtTime(v.mtime) || 'no date'}`;
-      document.getElementById('mRaw').href = v.url;
-      document.getElementById('mDl').href = v.url;
-      p.src = v.url;
+      document.getElementById('mTitle').textContent = `Video #${v.id}`;
+      document.getElementById('mInfo').textContent = `md5 ${v.md5} · bucket ${Math.floor(v.id/1000)*1000}`;
+      const url = streamUrl(v);
+      document.getElementById('mRaw').href = url;
+      document.getElementById('mDl').href = url;
+      p.src = url;
       m.classList.add('open');
       m.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
-      p.play().catch(() => { /* user gesture required */ });
+      p.play().catch(() => {});
     }
     function closeModal() {
       const m = document.getElementById('modal');
@@ -444,13 +312,9 @@
       m.setAttribute('aria-hidden', 'true');
       document.body.style.overflow = '';
     }
-    document.getElementById('modal').addEventListener('click', (e) => {
-      if (e.target.id === 'modal') closeModal();
-    });
+    document.getElementById('modal').addEventListener('click', (e) => { if (e.target.id === 'modal') closeModal(); });
     document.querySelector('.modal .close').addEventListener('click', closeModal);
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeModal();
-    });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
     document.getElementById('mCopy').addEventListener('click', async () => {
       const url = document.getElementById('mRaw').href;
       try {
@@ -461,25 +325,42 @@
       } catch (e) { alert('Copy failed: ' + e.message); }
     });
 
-    /* ---------- Search ---------- */
     let st;
     document.getElementById('q').addEventListener('input', (e) => {
       clearTimeout(st);
       st = setTimeout(() => { state.query = e.target.value.trim(); render(); }, 180);
     });
-    document.getElementById('sort').addEventListener('change', (e) => {
-      state.sort = e.target.value; render();
+    document.getElementById('sort').addEventListener('change', (e) => { state.sort = e.target.value; render(); });
+    document.getElementById('refresh').addEventListener('click', async () => {
+      const btn = document.getElementById('refresh');
+      btn.disabled = true; btn.textContent = '⟳ Loading…';
+      try {
+        state.videos = await loadManifest();
+        render();
+      } catch (e) { alert('Refresh failed: ' + e.message); }
+      btn.disabled = false; btn.textContent = '⟳ Refresh';
     });
 
-    /* ---------- Boot ---------- */
     (async () => {
       try {
-        const vids = await loadManifest();
-        state.videos = vids;
-        document.getElementById('stats').textContent = `${vids.length} video${vids.length !== 1 ? 's' : ''}`;
+        if (!state.worker) {
+          document.getElementById('grid').innerHTML = `<div class="error">
+            <b>Worker not configured.</b><br><br>
+            Deploy the Worker from <code>sexy-cf-worker.js</code>, then either:<br>
+            1) Append <code>?worker=https://your-worker.workers.dev</code> to this URL<br>
+            2) Run in DevTools: <code>localStorage.setItem('sexy.worker','https://your-worker.workers.dev'); location.reload()</code><br><br>
+            <small>Until then, the local sample video plays instead.</small>
+          </div>`;
+          document.getElementById('stats').textContent = 'idle';
+          // Fall back to local sample so page isn't dead
+          state.videos = [];
+          render();
+          return;
+        }
+        state.videos = await loadManifest();
         render();
       } catch (e) {
-        document.getElementById('grid').innerHTML = `<div class="error">Failed to load: ${e.message}<br><br>Make sure <code>videos/</code> folder exists in <a href="https://github.com/${REPO}" target="_blank" rel="noopener">${REPO}</a>.</div>`;
+        document.getElementById('grid').innerHTML = `<div class="error">Failed: ${e.message}</div>`;
         document.getElementById('stats').textContent = 'error';
       }
     })();
