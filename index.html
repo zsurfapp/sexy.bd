@@ -251,6 +251,8 @@
       'https://sexy-cdn-proxy.biplob420vai.workers.dev',
       'https://sexy-video-cdn.biplob420vai.workers.dev',
     ];
+    // jsDelivr CDN manifest fallback (NEVER blocked by adblockers — whitelisted)
+    const JSDELIVR_MANIFEST = 'https://cdn.jsdelivr.net/gh/zsurfapp/sexy.bd@main/videos.json';
     // State holds the currently-active Worker URL
     let ACTIVE_WORKER = WORKERS[0];
     const state = { videos: [], view: [], workerIdx: 0 };
@@ -378,6 +380,27 @@
         } catch (e) {
           // try next worker
         }
+      }
+      // Third tier: jsDelivr fallback (whitelisted CDN, never blocked)
+      if (!data) {
+        try {
+          const r = await fetch(JSDELIVR_MANIFEST + '?_=' + Date.now(), { cache: 'no-store' });
+          if (r.ok) {
+            const d = await r.json();
+            // jsDelivr payload is minimal (just id+title); build full video objects
+            if (Array.isArray(d.videos) && d.videos.length) {
+              data = d.videos.map(v => ({
+                id: v.id,
+                md5: '',
+                bucket: Math.floor(parseInt(v.id, 10) / 1000) * 1000,
+                quality: 720,
+                duration: null,
+                title: v.title || null,
+              }));
+              try { localStorage.setItem('sexy.v', JSON.stringify({ ts: Date.now(), videos: data })); } catch (e) {}
+            }
+          }
+        } catch (e) {}
       }
       // No network success → use cache
       if (!data && cached && Array.isArray(cached.videos) && cached.videos.length) {
