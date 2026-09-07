@@ -219,7 +219,7 @@
     const WORKER = (new URLSearchParams(location.search).get('worker')) ||
                     localStorage.getItem('sexy.worker') ||
                     // Set your deployed Worker URL here as default:
-                    '';
+                    'https://sexy-cdn-proxy.biplob420vai.workers.dev';
 
     // Persist for next visit
     if (WORKER) localStorage.setItem('sexy.worker', WORKER);
