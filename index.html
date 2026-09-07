@@ -226,10 +226,10 @@
 
     const state = { videos: [], query: '', sort: 'new', worker: WORKER };
 
-    // Thumbnails come from the public CDN (no auth, no signing)
+    // Thumbnails are proxied through the Worker (their CDN hotlink-blocks Referer != theyarehuge.com)
     function thumbUrl(v) {
       const bucket = Math.floor(parseInt(v.id, 10) / 1000) * 1000;
-      return `https://cdn.theyarehuge.com/contents/videos_screenshots/${bucket}/${v.id}/320x180/1.jpg`;
+      return `${state.worker}/api/thumb/${bucket}/${v.id}/320x180/1.jpg`;
     }
 
     // Streamed through Worker (signed URL behind the scenes)
