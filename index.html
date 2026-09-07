@@ -245,8 +245,15 @@
   (function() {
     'use strict';
 
-    const WORKER = 'https://sexy-cdn-proxy.biplob420vai.workers.dev';
-    const state = { videos: [], view: [] };
+    // Multiple Worker endpoints — try each in order (adblocker bypass)
+    // Different subdomain names so adblockers don't catch all of them
+    const WORKERS = [
+      'https://sexy-cdn-proxy.biplob420vai.workers.dev',
+      'https://sexy-video-cdn.biplob420vai.workers.dev',
+    ];
+    // State holds the currently-active Worker URL
+    let ACTIVE_WORKER = WORKERS[0];
+    const state = { videos: [], view: [], workerIdx: 0 };
     const searchWrap = document.getElementById('searchWrap');
     const searchInput = document.getElementById('q');
     const clearBtn = document.getElementById('clearBtn');
@@ -264,11 +271,11 @@
 
     function thumb(v) {
       const b = bucketOf(v.id);
-      return `${WORKER}/t/${b}/${v.id}/hd/1.jpg`;
+      return `${ACTIVE_WORKER}/t/${b}/${v.id}/hd/1.jpg`;
     }
     function thumbStd(v) {
       const b = bucketOf(v.id);
-      return `${WORKER}/t/${b}/${v.id}/640x360/1.jpg`;
+      return `${ACTIVE_WORKER}/t/${b}/${v.id}/640x360/1.jpg`;
     }
 
     function playIconSVG() {
@@ -283,7 +290,7 @@
     // fullscreen but without any browser-controlled toasts or gestures.
 
     function playVideo(v) {
-      const url = `${WORKER}/v/${v.id}.mp4`;
+      const url = `${ACTIVE_WORKER}/v/${v.id}.mp4`;
       player.src = url;
       player.classList.add('active');
       player.muted = false;
@@ -350,23 +357,36 @@
 
     async function load() {
       const grid = document.getElementById('grid');
+      // Read cache first (so something displays immediately)
       const cached = (() => { try { return JSON.parse(localStorage.getItem('sexy.v') || 'null'); } catch (e) { return null; } })();
-      // Try network first; fall back to cache if Worker fails (adblocker, 503, offline)
       let data = null;
-      try {
-        const r = await fetch(`${WORKER}/m?_=${Date.now()}`, { cache: 'no-store' });
-        if (r.ok) {
-          const d = await r.json();
-          if (Array.isArray(d.videos) && d.videos.length) {
-            data = d.videos;
-            try { localStorage.setItem('sexy.v', JSON.stringify({ ts: Date.now(), videos: d.videos })); } catch (e) {}
+      // Try each Worker in order; first success wins, persist which one worked
+      for (let i = 0; i < WORKERS.length; i++) {
+        const w = WORKERS[i];
+        try {
+          const r = await fetch(`${w}/m?_=${Date.now()}`, { cache: 'no-store' });
+          if (r.ok) {
+            const d = await r.json();
+            if (Array.isArray(d.videos) && d.videos.length) {
+              data = d.videos;
+              ACTIVE_WORKER = w;
+              state.workerIdx = i;
+              try { localStorage.setItem('sexy.v', JSON.stringify({ ts: Date.now(), videos: d.videos, workerIdx: i })); } catch (e) {}
+              break;
+            }
           }
+        } catch (e) {
+          // try next worker
         }
-      } catch (e) {
-        // network failed; use cache
       }
+      // No network success → use cache
       if (!data && cached && Array.isArray(cached.videos) && cached.videos.length) {
         data = cached.videos;
+        // Restore previously-working worker
+        if (typeof cached.workerIdx === 'number' && cached.workerIdx < WORKERS.length) {
+          ACTIVE_WORKER = WORKERS[cached.workerIdx];
+          state.workerIdx = cached.workerIdx;
+        }
       }
       if (data) {
         state.videos = data;
