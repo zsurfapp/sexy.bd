@@ -11,10 +11,7 @@
   <style>
     :root {
       --bg-1: #0a0a14;
-      --bg-2: #16162a;
-      --bg-3: #1f1f3a;
       --accent: #ff2d6e;
-      --accent-2: #c822ff;
       --text: #f5f5fa;
       --muted: #7c7c95;
       --line: rgba(255, 255, 255, 0.08);
@@ -42,7 +39,6 @@
       z-index: -1;
     }
 
-    /* Top bar */
     .topbar {
       position: sticky; top: 0; z-index: 100;
       backdrop-filter: blur(20px) saturate(180%);
@@ -91,7 +87,6 @@
     .search .clear:hover { background: rgba(255, 255, 255, 0.12); color: var(--text); }
     .search.has-value .clear { display: flex; }
 
-    /* Grid */
     main {
       max-width: 1440px;
       margin: 0 auto;
@@ -157,7 +152,8 @@
     }
     .card:hover .title-bar { opacity: 1; }
 
-    /* Hidden video element — only attached when playing */
+    /* === Video player — uses CSS fullscreen simulation (no native fullscreen API) === */
+    /* This avoids browser's "Press ESC to exit" / "Drag down" toast messages */
     video.player {
       position: fixed;
       top: 0; left: 0;
@@ -170,7 +166,6 @@
     }
     video.player.active { display: block; }
 
-    /* States */
     .loading {
       display: flex; align-items: center; justify-content: center;
       padding: 120px 20px;
@@ -248,52 +243,22 @@
       return '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
     }
 
-    // Cross-browser fullscreen request
-    function requestFullscreen(el) {
-      const fn = el.requestFullscreen
-              || el.webkitRequestFullscreen
-              || el.mozRequestFullScreen
-              || el.msRequestFullscreen;
-      if (fn) {
-        try { return fn.call(el); } catch (e) { return Promise.reject(e); }
-      }
-      return Promise.reject(new Error('fullscreen API not supported'));
-    }
+    // Note: We do NOT use the native Fullscreen API here on purpose.
+    // Browsers (Chrome, Safari, mobile) display intrusive overlay messages
+    // ("Press ESC to exit fullscreen", "Drag down to exit") when Fullscreen API
+    // is invoked. Instead, we simulate fullscreen using a fixed-position
+    // video element that fills the viewport — visually identical to native
+    // fullscreen but without any browser-controlled toasts or gestures.
 
-    function exitFullscreen() {
-      const fn = document.exitFullscreen
-              || document.webkitExitFullscreen
-              || document.mozCancelFullScreen
-              || document.msExitFullscreen;
-      if (fn) {
-        try { fn.call(document); } catch (e) {}
-      }
-    }
-
-    function isFullscreen() {
-      return !!(document.fullscreenElement
-              || document.webkitFullscreenElement
-              || document.mozFullScreenElement
-              || document.msFullscreenElement);
-    }
-
-    // Open video: show player element + try fullscreen + play
     function playVideo(v) {
       const url = `${WORKER}/v/${v.id}.mp4`;
       player.src = url;
       player.classList.add('active');
       player.muted = false;
-      // Attempt to enter fullscreen (must be in user gesture handler — click event qualifies)
-      requestFullscreen(player).catch(() => {
-        // Fullscreen denied/blocked — video still plays full-window via .player.active
-      });
-      // Play (autoplay allowed inside user gesture)
+      // No fullscreen API call → no browser toast messages
       const p = player.play();
       if (p && p.catch) {
-        p.catch(() => {
-          // Autoplay blocked — at least show controls, user can press play
-          player.controls = true;
-        });
+        p.catch(() => { player.controls = true; });
       }
     }
 
@@ -304,8 +269,8 @@
       player.classList.remove('active');
     }
 
-    // Click on player itself = toggle play/pause (since fullscreen overlays controls)
-    player.addEventListener('click', (e) => {
+    // Click on player toggles play/pause
+    player.addEventListener('click', () => {
       if (player.paused) {
         player.play().catch(() => {});
       } else {
@@ -313,26 +278,15 @@
       }
     });
 
-    // ESC / fullscreen exit → stop video
-    document.addEventListener('fullscreenchange', () => {
-      if (!isFullscreen() && player.classList.contains('active')) {
-        // User exited fullscreen — also stop the video
-        stopVideo();
-      }
-    });
-    document.addEventListener('webkitfullscreenchange', () => {
-      if (!isFullscreen() && player.classList.contains('active')) stopVideo();
-    });
-    document.addEventListener('mozfullscreenchange', () => {
-      if (!isFullscreen() && player.classList.contains('active')) stopVideo();
-    });
-
-    // ESC key always stops video if active
+    // ESC always stops video if active
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape' && player.classList.contains('active')) {
         stopVideo();
       }
     });
+
+    // Also stop on video ended
+    player.addEventListener('ended', stopVideo);
 
     async function load() {
       try {
@@ -368,7 +322,6 @@
       });
     }
 
-    // Search with debounce + clear button
     let st;
     searchInput.addEventListener('input', (e) => {
       const v = e.target.value.trim();
