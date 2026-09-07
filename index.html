@@ -94,6 +94,13 @@
       background: rgba(0, 0, 0, 0.65); color: var(--text);
       font-size: 0.65rem; padding: 3px 6px; border-radius: 4px; font-weight: 600;
     }
+    .card .duration {
+      position: absolute; bottom: 6px; right: 6px;
+      background: rgba(0, 0, 0, 0.75); color: var(--text);
+      font-size: 0.72rem; padding: 3px 7px; border-radius: 4px;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      font-variant-numeric: tabular-nums;
+    }
     .card .play-icon {
       position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
       background: rgba(0, 0, 0, 0.35); opacity: 0; transition: opacity .2s;
@@ -247,6 +254,14 @@
       return d.videos || [];
     }
 
+    function fmtDur(sec) {
+      if (!sec) return '';
+      const h = Math.floor(sec / 3600);
+      const m = Math.floor((sec % 3600) / 60);
+      const s = sec % 60;
+      return h ? `${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}` : `${m}:${String(s).padStart(2,'0')}`;
+    }
+
     function render() {
       const grid = document.getElementById('grid');
       const headerTitle = document.getElementById('headerTitle');
@@ -259,10 +274,14 @@
       // Filter
       if (state.query) {
         const q = state.query.toLowerCase();
-        list = list.filter(v => v.id.includes(q));
+        list = list.filter(v =>
+          (v.title && v.title.toLowerCase().includes(q)) ||
+          v.id.includes(q) ||
+          (v.duration && String(v.duration).includes(q))
+        );
       }
 
-      headerTitle.textContent = `Popular videos (${list.length} / ${state.videos.length})`;
+      headerTitle.textContent = `All videos (${list.length} / ${state.videos.length})`;
       document.getElementById('stats').textContent = `${state.videos.length} videos`;
 
       if (!list.length) {
@@ -271,13 +290,14 @@
       }
 
       grid.innerHTML = list.map((v, i) => `
-        <div class="card" data-i="${i}" title="video ${v.id}">
-          <img src="${thumbUrl(v)}" loading="lazy" alt="video ${v.id}" />
-          <div class="badge">${v.id}</div>
+        <div class="card" data-i="${i}" title="${(v.title || 'video '+v.id).replace(/"/g,'&quot;')}">
+          <img src="${thumbUrl(v)}" loading="lazy" alt="${(v.title || 'video '+v.id).replace(/"/g,'&quot;')}" />
+          <div class="badge">${v.quality || '720'}p</div>
+          ${v.duration ? `<div class="duration">${fmtDur(v.duration)}</div>` : ''}
           <div class="play-icon">▶</div>
           <div class="meta">
-            <div class="title">Video #${v.id}</div>
-            <div class="info">md5 ${v.md5.slice(0,8)}… · bucket ${Math.floor(v.id/1000)*1000}</div>
+            <div class="title">${v.title || 'Video #' + v.id}</div>
+            <div class="info">${v.id}${v.duration ? ' · ' + fmtDur(v.duration) : ''}</div>
           </div>
         </div>
       `).join('');
@@ -293,8 +313,9 @@
     function openModal(v) {
       const m = document.getElementById('modal');
       const p = document.getElementById('player');
-      document.getElementById('mTitle').textContent = `Video #${v.id}`;
-      document.getElementById('mInfo').textContent = `md5 ${v.md5} · bucket ${Math.floor(v.id/1000)*1000}`;
+      document.getElementById('mTitle').textContent = v.title || `Video #${v.id}`;
+      const infoParts = [`id ${v.id}`, v.duration ? `dur ${fmtDur(v.duration)}` : '', v.quality ? `${v.quality}p` : ''].filter(Boolean);
+      document.getElementById('mInfo').textContent = infoParts.join(' · ');
       const url = streamUrl(v);
       document.getElementById('mRaw').href = url;
       document.getElementById('mDl').href = url;
@@ -367,3 +388,4 @@
   </script>
 </body>
 </html>deploy stamp 1788797784
+deploy 1788798640
