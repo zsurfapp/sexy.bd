@@ -152,6 +152,24 @@
     }
     .card:hover .title-bar { opacity: 1; }
 
+    /* Ad slot — full-width inline banner */
+    .ad-slot {
+      grid-column: 1 / -1;
+      min-height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+    .ad-slot > div[id^="container-"] {
+      width: 100%;
+      min-height: 60px;
+    }
+
     /* === Video player — uses native Fullscreen API for immersive experience === */
     /* Note: Browsers may show brief overlay ("Press ESC to exit", "Drag down to exit")
        when entering native fullscreen — this is browser-controlled UX and cannot
@@ -338,18 +356,37 @@
         grid.innerHTML = '<div class="empty">No videos match.</div>';
         return;
       }
-      grid.innerHTML = list.map((v, i) => `
+      const AD_ZONE = 'dc3ee389415a7378d67f2c9dbaae6681';
+      grid.innerHTML = list.map((v, i) => {
+        // Insert ad slot every 11th item (after 10 videos)
+        const adSlot = (i > 0 && (i + 1) % 11 === 0)
+          ? `<div class="ad-slot"><div id="container-${AD_ZONE}"></div></div>`
+          : '';
+        return `
         <div class="card" data-i="${i}">
           <img src="${thumb(v)}" loading="lazy" referrerpolicy="no-referrer"
                onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='${thumbStd(v)}'}" />
           ${v.duration ? `<div class="duration">${fmtDur(v.duration)}</div>` : ''}
           <div class="play-icon">${playIconSVG()}</div>
           <div class="title-bar">${(v.title || '').replace(/</g,'&lt;')}</div>
-        </div>
-      `).join('');
+        </div>${adSlot}`;
+      }).join('');
       grid.querySelectorAll('.card').forEach(card => {
         card.addEventListener('click', () => playVideo(list[+card.dataset.i]));
       });
+      // Load Adsterra script once per page (only if not already loaded)
+      injectAdsterra();
+    }
+
+    // Adsterra Native Banner — same zone ID on every container, invoke.js fills them all
+    function injectAdsterra() {
+      if (document.querySelector('script[data-adsterra-loaded]')) return;
+      const s = document.createElement('script');
+      s.async = true;
+      s.setAttribute('data-cfasync', 'false');
+      s.src = 'https://pl31233689.profitableratecpmnetwork.com/dc3ee389415a7378d67f2c9dbaae6681/invoke.js';
+      s.setAttribute('data-adsterra-loaded', '1');
+      document.body.appendChild(s);
     }
 
     let st;
