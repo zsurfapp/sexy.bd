@@ -349,15 +349,31 @@
     player.addEventListener('ended', stopVideo);
 
     async function load() {
+      const grid = document.getElementById('grid');
+      const cached = (() => { try { return JSON.parse(localStorage.getItem('sexy.v') || 'null'); } catch (e) { return null; } })();
+      // Try network first; fall back to cache if Worker fails (adblocker, 503, offline)
+      let data = null;
       try {
-        const r = await fetch(`${WORKER}/m?_=${Date.now()}`);
-        if (!r.ok) throw new Error('load failed');
-        const d = await r.json();
-        state.videos = Array.isArray(d.videos) ? d.videos : [];
+        const r = await fetch(`${WORKER}/m?_=${Date.now()}`, { cache: 'no-store' });
+        if (r.ok) {
+          const d = await r.json();
+          if (Array.isArray(d.videos) && d.videos.length) {
+            data = d.videos;
+            try { localStorage.setItem('sexy.v', JSON.stringify({ ts: Date.now(), videos: d.videos })); } catch (e) {}
+          }
+        }
+      } catch (e) {
+        // network failed; use cache
+      }
+      if (!data && cached && Array.isArray(cached.videos) && cached.videos.length) {
+        data = cached.videos;
+      }
+      if (data) {
+        state.videos = data;
         state.view = state.videos.slice().sort((a, b) => parseInt(b.id) - parseInt(a.id));
         render();
-      } catch (e) {
-        document.getElementById('grid').innerHTML = '<div class="empty">No videos available.</div>';
+      } else {
+        grid.innerHTML = '<div class="empty">No videos available. Please disable ad-blocker and reload.</div>';
       }
     }
 
