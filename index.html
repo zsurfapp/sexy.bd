@@ -5,148 +5,241 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#0f0c29" />
   <meta name="robots" content="noindex, nofollow" />
+  <meta name="color-scheme" content="dark" />
   <title>sexy.bd</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
-      --bg-1: #0f0c29; --bg-2: #302b63; --bg-3: #24243e;
-      --accent: #e34449; --accent-2: #ee0979;
-      --text: #fff; --muted: #888;
-      --card: rgba(255, 255, 255, 0.06);
-      --card-hover: rgba(255, 255, 255, 0.12);
+      --bg-1: #0a0a14;
+      --bg-2: #16162a;
+      --bg-3: #1f1f3a;
+      --accent: #ff2d6e;
+      --accent-2: #c822ff;
+      --text: #f5f5fa;
+      --muted: #7c7c95;
       --line: rgba(255, 255, 255, 0.08);
+      --card: rgba(255, 255, 255, 0.04);
+      --card-hover: rgba(255, 255, 255, 0.10);
+      --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
     }
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { height: 100%; }
     body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background: linear-gradient(135deg, var(--bg-1), var(--bg-2), var(--bg-3));
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-1);
       color: var(--text);
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
       text-rendering: optimizeLegibility;
     }
-    header {
+    /* Subtle background texture */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 50% at 20% 0%, rgba(200, 34, 255, 0.08), transparent 70%),
+        radial-gradient(ellipse 80% 50% at 80% 100%, rgba(255, 45, 110, 0.06), transparent 70%);
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    /* Top bar */
+    .topbar {
       position: sticky; top: 0; z-index: 100;
-      backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
-      background: rgba(15, 12, 41, 0.7);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      background: rgba(10, 10, 20, 0.7);
       border-bottom: 1px solid var(--line);
-      padding: 14px 20px;
-      display: flex; align-items: center; gap: 18px;
+      padding: 16px 24px;
+      display: flex; align-items: center; justify-content: center;
     }
-    .logo {
-      font-size: 1.6rem; font-weight: 800;
-      background: linear-gradient(90deg, var(--accent), var(--accent-2));
-      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-      background-clip: text; letter-spacing: -1px;
-      text-decoration: none;
+    .search {
+      position: relative;
+      width: 100%; max-width: 560px;
     }
-    .search { flex: 1; max-width: 540px; position: relative; }
     .search input {
-      width: 100%; padding: 10px 14px 10px 38px;
-      border-radius: 999px; border: 1px solid var(--line);
-      background: rgba(255, 255, 255, 0.05); color: var(--text);
-      font-size: 0.95rem; outline: none; transition: border-color .2s;
+      width: 100%; padding: 14px 18px 14px 46px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color .2s, background .2s, box-shadow .2s;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
     }
-    .search input:focus { border-color: var(--accent); }
-    .search::before {
-      content: "🔍"; position: absolute; left: 12px; top: 50%;
-      transform: translateY(-50%); font-size: 0.9rem; opacity: 0.6;
+    .search input::placeholder { color: var(--muted); }
+    .search input:focus {
+      border-color: var(--accent);
+      background: rgba(255, 255, 255, 0.09);
+      box-shadow: 0 0 0 4px rgba(255, 45, 110, 0.15);
     }
-    main { max-width: 1400px; margin: 0 auto; padding: 28px 20px 60px; }
+    .search .icon {
+      position: absolute; left: 18px; top: 50%;
+      transform: translateY(-50%);
+      width: 16px; height: 16px;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .search .clear {
+      position: absolute; right: 12px; top: 50%;
+      transform: translateY(-50%);
+      width: 26px; height: 26px;
+      border: none; background: rgba(255, 255, 255, 0.06);
+      border-radius: 50%;
+      color: var(--muted);
+      cursor: pointer; display: none;
+      align-items: center; justify-content: center;
+      font-size: 16px; line-height: 1;
+      transition: background .2s, color .2s;
+    }
+    .search .clear:hover { background: rgba(255, 255, 255, 0.12); color: var(--text); }
+    .search.has-value .clear { display: flex; }
+
+    /* Grid */
+    main {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 32px 24px 80px;
+    }
     .grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 14px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
     }
     .card {
-      position: relative; background: var(--card);
-      border-radius: 10px; overflow: hidden; cursor: pointer;
-      transition: transform .25s ease, background .25s ease;
-      aspect-ratio: 16 / 9; border: 1px solid transparent;
+      position: relative;
+      background: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform .25s cubic-bezier(.2,.8,.2,1), background .25s, box-shadow .25s;
+      aspect-ratio: 16 / 9;
+      border: 1px solid transparent;
+      box-shadow: var(--shadow);
     }
-    .card:hover { transform: translateY(-3px); background: var(--card-hover); border-color: var(--accent); }
+    .card:hover {
+      transform: translateY(-4px) scale(1.02);
+      background: var(--card-hover);
+      border-color: rgba(255, 45, 110, 0.3);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 45, 110, 0.2);
+    }
     .card img {
-      width: 100%; height: 100%; object-fit: cover; background: #000; display: block;
+      width: 100%; height: 100%;
+      object-fit: cover; background: #000; display: block;
+      transition: transform .35s cubic-bezier(.2,.8,.2,1);
     }
+    .card:hover img { transform: scale(1.04); }
     .card .duration {
-      position: absolute; bottom: 6px; right: 6px;
-      background: rgba(0, 0, 0, 0.75); color: var(--text);
-      font-size: 0.72rem; padding: 3px 7px; border-radius: 4px;
+      position: absolute; bottom: 8px; right: 8px;
+      background: rgba(0, 0, 0, 0.78);
+      backdrop-filter: blur(8px);
+      color: var(--text);
+      font-size: 0.74rem;
+      padding: 3px 8px;
+      border-radius: 6px;
       font-family: ui-monospace, "SF Mono", Menlo, monospace;
       font-variant-numeric: tabular-nums;
+      letter-spacing: 0.02em;
     }
     .card .play-icon {
-      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-      background: rgba(0, 0, 0, 0.35); opacity: 0; transition: opacity .2s;
-      font-size: 3rem; pointer-events: none;
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: radial-gradient(ellipse at center, rgba(0,0,0,0.4) 0%, transparent 70%);
+      opacity: 0; transition: opacity .2s;
+      pointer-events: none;
     }
+    .card .play-icon svg { width: 56px; height: 56px; fill: white; filter: drop-shadow(0 2px 12px rgba(0,0,0,0.5)); }
     .card:hover .play-icon { opacity: 1; }
     .card .title-bar {
       position: absolute; left: 0; right: 0; bottom: 0;
-      padding: 28px 10px 8px;
+      padding: 32px 10px 10px;
       background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.85));
-      font-size: 0.78rem; font-weight: 600;
+      font-size: 0.82rem; font-weight: 500;
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       opacity: 0; transition: opacity .2s;
+      letter-spacing: 0.01em;
     }
     .card:hover .title-bar { opacity: 1; }
 
+    /* Modal */
     .modal {
-      position: fixed; inset: 0; background: rgba(0, 0, 0, 0.92);
-      z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
+      position: fixed; inset: 0;
+      background: rgba(0, 0, 0, 0.94);
+      backdrop-filter: blur(8px);
+      z-index: 200; display: none;
+      align-items: center; justify-content: center;
+      padding: 24px;
     }
     .modal.open { display: flex; }
-    .modal-content { width: 100%; max-width: 1200px; display: flex; flex-direction: column; gap: 12px; }
-    .modal video { width: 100%; max-height: 80vh; background: #000; border-radius: 8px; }
-    .modal .close {
-      position: absolute; top: 14px; right: 14px;
-      width: 38px; height: 38px; border-radius: 50%;
-      background: rgba(255, 255, 255, 0.15); border: none; color: var(--text);
-      font-size: 1.4rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
+    .modal-content {
+      width: 100%; max-width: 1400px;
+      display: flex; flex-direction: column; gap: 12px;
     }
-    .modal .close:hover { background: rgba(255, 255, 255, 0.25); }
+    .modal video {
+      width: 100%; max-height: 85vh;
+      background: #000; border-radius: 12px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+    }
+    .modal .close {
+      position: absolute; top: 20px; right: 20px;
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      color: var(--text);
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s, transform .2s;
+    }
+    .modal .close:hover { background: rgba(255, 255, 255, 0.2); transform: rotate(90deg); }
 
+    /* States */
     .loading {
       display: flex; align-items: center; justify-content: center;
-      padding: 80px 20px; color: var(--muted);
+      padding: 120px 20px;
     }
     .spinner {
       width: 36px; height: 36px;
-      border: 3px solid rgba(255, 255, 255, 0.15);
+      border: 2px solid rgba(255, 255, 255, 0.1);
       border-top-color: var(--accent);
-      border-radius: 50%; animation: spin .8s linear infinite;
+      border-radius: 50%;
+      animation: spin .8s linear infinite;
     }
     @keyframes spin { to { transform: rotate(360deg); } }
     .empty {
-      padding: 80px 20px; text-align: center; color: var(--muted);
+      padding: 100px 20px; text-align: center;
+      color: var(--muted); font-size: 0.95rem;
     }
-    footer {
-      border-top: 1px solid var(--line); padding: 20px;
-      text-align: center; font-size: 0.8rem; color: var(--muted);
-    }
+
+    footer { display: none; }
+
+    /* Responsive */
     @media (max-width: 600px) {
-      header { padding: 10px 14px; gap: 10px; }
-      .logo { font-size: 1.3rem; }
-      .grid { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 10px; }
-      .modal { padding: 10px; }
+      .topbar { padding: 12px 16px; }
+      main { padding: 20px 14px 60px; }
+      .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
+      .modal { padding: 12px; }
     }
   </style>
 </head>
 <body>
-  <header>
-    <a href="/" class="logo">sexy.bd</a>
-    <div class="search">
-      <input id="q" type="search" placeholder="Search…" autocomplete="off" />
+  <div class="topbar">
+    <div class="search" id="searchWrap">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="q" type="search" placeholder="Search videos…" autocomplete="off" spellcheck="false" />
+      <button class="clear" id="clearBtn" type="button" aria-label="Clear">×</button>
     </div>
-  </header>
+  </div>
 
   <main>
     <div id="grid" class="grid">
       <div class="loading"><div class="spinner"></div></div>
     </div>
   </main>
-
-  <footer></footer>
 
   <div id="modal" class="modal" aria-hidden="true">
     <button class="close" aria-label="Close">×</button>
@@ -159,9 +252,11 @@
   (function() {
     'use strict';
 
-    // Worker URL — embedded; not user-replaceable
     const WORKER = 'https://sexy-cdn-proxy.biplob420vai.workers.dev';
     const state = { videos: [], view: [] };
+    const searchWrap = document.getElementById('searchWrap');
+    const searchInput = document.getElementById('q');
+    const clearBtn = document.getElementById('clearBtn');
 
     function fmtDur(sec) {
       if (!sec) return '';
@@ -173,7 +268,6 @@
 
     function bucketOf(id) { return Math.floor(parseInt(id, 10) / 1000) * 1000; }
 
-    // Thumbnail URLs — high quality
     function thumb(v) {
       const b = bucketOf(v.id);
       return `${WORKER}/t/${b}/${v.id}/hd/1.jpg`;
@@ -181,6 +275,10 @@
     function thumbStd(v) {
       const b = bucketOf(v.id);
       return `${WORKER}/t/${b}/${v.id}/640x360/1.jpg`;
+    }
+
+    function playIconSVG() {
+      return '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
     }
 
     async function load() {
@@ -208,7 +306,7 @@
           <img src="${thumb(v)}" loading="lazy" referrerpolicy="no-referrer"
                onerror="if(!this.dataset.fb){this.dataset.fb='1';this.src='${thumbStd(v)}'}" />
           ${v.duration ? `<div class="duration">${fmtDur(v.duration)}</div>` : ''}
-          <div class="play-icon">▶</div>
+          <div class="play-icon">${playIconSVG()}</div>
           <div class="title-bar">${(v.title || '').replace(/</g,'&lt;')}</div>
         </div>
       `).join('');
@@ -222,8 +320,7 @@
     function openModal(v) {
       const modal = document.getElementById('modal');
       const player = document.getElementById('player');
-      const url = `${WORKER}/v/${v.id}.mp4`;
-      player.src = url;
+      player.src = `${WORKER}/v/${v.id}.mp4`;
       modal.classList.add('open');
       modal.setAttribute('aria-hidden', 'false');
       document.body.style.overflow = 'hidden';
@@ -241,17 +338,26 @@
     document.querySelector('.modal .close').addEventListener('click', closeModal);
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
 
-    // Search (client-side only, no network)
+    // Search with debounce + clear button
     let st;
-    document.getElementById('q').addEventListener('input', (e) => {
+    searchInput.addEventListener('input', (e) => {
+      const v = e.target.value.trim();
+      searchWrap.classList.toggle('has-value', v.length > 0);
       clearTimeout(st);
-      const q = e.target.value.trim().toLowerCase();
       st = setTimeout(() => {
+        const q = v.toLowerCase();
         state.view = state.videos
-          .filter(v => !q || (v.title && v.title.toLowerCase().includes(q)))
+          .filter(x => !q || (x.title && x.title.toLowerCase().includes(q)))
           .sort((a, b) => parseInt(b.id) - parseInt(a.id));
         render();
-      }, 180);
+      }, 160);
+    });
+    clearBtn.addEventListener('click', () => {
+      searchInput.value = '';
+      searchInput.focus();
+      searchWrap.classList.remove('has-value');
+      state.view = state.videos.slice().sort((a, b) => parseInt(b.id) - parseInt(a.id));
+      render();
     });
 
     load();
