@@ -250,51 +250,70 @@
     }
   </style>
 
-<!-- Dynamic OG meta update for ?v=<id> deep links -->
+<!-- Smart per-video OG meta for ?v=<id> — synchronous, runs before FB scraper reads meta -->
 <script>
 (function() {
   var params = new URLSearchParams(location.search);
   var vid = params.get('v');
   if (!vid) return;
   
-  // Fetch real title from share worker
-  fetch('https://sexy-share.biplob420vai.workers.dev/v/' + vid)
-    .then(function(r) { return r.text(); })
-    .then(function(html) {
-      var titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
-      var imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
-      var videoMatch = html.match(/<meta property="og:video" content="([^"]+)"/);
-      
-      if (titleMatch) {
-        document.title = titleMatch[1];
-        setMeta('og:title', titleMatch[1]);
-        setMeta('twitter:title', titleMatch[1]);
-      }
-      if (imageMatch) {
-        setMeta('og:image', imageMatch[1]);
-        setMeta('og:image:secure_url', imageMatch[1]);
-        setMeta('twitter:image', imageMatch[1]);
-      }
-      if (videoMatch) {
-        setMeta('og:video', videoMatch[1]);
-        setMeta('og:video:secure_url', videoMatch[1]);
-      }
-      setMeta('og:type', 'video.other');
-      setMeta('og:url', location.href);
-    }).catch(function() {});
+  // Derive thumbnail URLs from video ID (no fetch needed)
+  var bucket = Math.floor(parseInt(vid, 10) / 1000) * 1000;
+  var thumbHd        = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/t/' + bucket + '/' + vid + '/hd/1.jpg';
+  var thumb720       = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/t/' + bucket + '/' + vid + '/720p/1.jpg';
+  var thumbFallback  = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/t/' + bucket + '/' + vid + '/640x360/1.jpg';
+  var videoStream    = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/v/' + vid + '.mp4';
+  var shareUrl       = location.origin + location.pathname + '?v=' + vid;
   
-  function setMeta(prop, content) {
-    var sel = 'meta[property="' + prop + '"], meta[name="' + prop + '"]';
-    var el = document.querySelector(sel);
-    if (el) el.setAttribute('content', content);
-    else {
+  function setMeta(prop, content, useName) {
+    var attr = useName ? 'name' : 'property';
+    var el = document.querySelector('meta[' + attr + '="' + prop + '"]');
+    if (el) {
+      el.setAttribute('content', content);
+    } else {
       var m = document.createElement('meta');
-      if (prop.indexOf('og:') === 0) m.setAttribute('property', prop);
-      else m.setAttribute('name', prop);
+      m.setAttribute(attr, prop);
       m.setAttribute('content', content);
       document.head.appendChild(m);
     }
   }
+  
+  // === SYNCHRONOUS — runs before FB scraper paints ===
+  setMeta('og:type', 'video.other');
+  setMeta('og:title', 'HD Video #' + vid);
+  setMeta('og:description', 'Watch full HD video #' + vid + ' · free stream · no signup · instant play');
+  setMeta('og:url', shareUrl);
+  setMeta('og:image', thumbHd);
+  setMeta('og:image:secure_url', thumbHd);
+  setMeta('og:image:width', '1280');
+  setMeta('og:image:height', '720');
+  setMeta('og:image:type', 'image/jpeg');
+  setMeta('og:image:alt', 'Video ' + vid + ' preview');
+  setMeta('og:video', videoStream);
+  setMeta('og:video:secure_url', videoStream);
+  setMeta('og:video:type', 'video/mp4');
+  setMeta('og:video:width', '854');
+  setMeta('og:video:height', '480');
+  setMeta('twitter:card', 'player');
+  setMeta('twitter:title', 'HD Video #' + vid, true);
+  setMeta('twitter:description', 'Watch full HD video free', true);
+  setMeta('twitter:image', thumbHd, true);
+  setMeta('twitter:player:stream', videoStream, true);
+  setMeta('twitter:player:stream:content_type', 'video/mp4', true);
+  setMeta('twitter:player:width', '854', true);
+  setMeta('twitter:player:height', '480', true);
+  
+  // ASYNC upgrade: replace title with real video title (from share-worker)
+  fetch('https://sexy-share.biplob420vai.workers.dev/v/' + vid)
+    .then(function(r) { return r.text(); })
+    .then(function(t) {
+      var tm = t.match(/<meta property="og:title" content="([^"]+)"/);
+      if (tm && tm[1]) {
+        document.title = tm[1];
+        setMeta('og:title', tm[1]);
+        setMeta('twitter:title', tm[1], true);
+      }
+    }).catch(function() {});
 })();
 </script>
 
