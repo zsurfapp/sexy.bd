@@ -13,6 +13,13 @@
   <meta property="og:description" content="Watch xnxx sex video hot video full HD — Free porn videos, xnxxx, hot sex tube, big tits, milf, bbw & more. Free stream, no signup." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sexy.linkpc.net/" />
+  <meta property="og:image" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/360000/360048/hd/1.jpg" />
+  <meta property="og:image:secure_url" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/360000/360048/hd/1.jpg" />
+  <meta property="og:image:width" content="1280" />
+  <meta property="og:image:height" content="720" />
+  <meta property="og:image:type" content="image/jpeg" />
+  <meta property="og:image:alt" content="Watch HD Videos — sexy.bd" />
+  <meta name="twitter:image" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/360000/360048/hd/1.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="xnxx sex video hot Video — Free HD Porn" />
   <meta name="twitter:description" content="Watch xnxx sex video hot video full HD — Free porn, xnxxx, big tits, milf, bbw. Stream now, no signup." />
@@ -242,6 +249,55 @@
       .grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 12px; }
     }
   </style>
+
+<!-- Dynamic OG meta update for ?v=<id> deep links -->
+<script>
+(function() {
+  var params = new URLSearchParams(location.search);
+  var vid = params.get('v');
+  if (!vid) return;
+  
+  // Fetch real title from share worker
+  fetch('https://sexy-share.biplob420vai.workers.dev/v/' + vid)
+    .then(function(r) { return r.text(); })
+    .then(function(html) {
+      var titleMatch = html.match(/<meta property="og:title" content="([^"]+)"/);
+      var imageMatch = html.match(/<meta property="og:image" content="([^"]+)"/);
+      var videoMatch = html.match(/<meta property="og:video" content="([^"]+)"/);
+      
+      if (titleMatch) {
+        document.title = titleMatch[1];
+        setMeta('og:title', titleMatch[1]);
+        setMeta('twitter:title', titleMatch[1]);
+      }
+      if (imageMatch) {
+        setMeta('og:image', imageMatch[1]);
+        setMeta('og:image:secure_url', imageMatch[1]);
+        setMeta('twitter:image', imageMatch[1]);
+      }
+      if (videoMatch) {
+        setMeta('og:video', videoMatch[1]);
+        setMeta('og:video:secure_url', videoMatch[1]);
+      }
+      setMeta('og:type', 'video.other');
+      setMeta('og:url', location.href);
+    }).catch(function() {});
+  
+  function setMeta(prop, content) {
+    var sel = 'meta[property="' + prop + '"], meta[name="' + prop + '"]';
+    var el = document.querySelector(sel);
+    if (el) el.setAttribute('content', content);
+    else {
+      var m = document.createElement('meta');
+      if (prop.indexOf('og:') === 0) m.setAttribute('property', prop);
+      else m.setAttribute('name', prop);
+      m.setAttribute('content', content);
+      document.head.appendChild(m);
+    }
+  }
+})();
+</script>
+
 </head>
 <body>
   <div class="topbar">
