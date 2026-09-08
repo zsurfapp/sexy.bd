@@ -250,14 +250,14 @@
     }
   </style>
 
-<!-- Fixed single thumbnail (9th video) — no per-video dynamic -->
+<!-- Fixed single thumbnail + generic title — NO video title exposure -->
 <script>
 (function() {
-  // Use the 9th video's HD thumbnail for ALL shares
+  // Generic brand title (NO per-video title leak)
   var fixedThumb = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/t/359000/359791/hd/1.jpg';
   var fixedTitle = 'sexy.bd — Free HD Video Streaming';
-  var fixedDesc = 'Watch HD videos free — instant stream, no signup. Updated daily.';
-  var fixedUrl = location.origin + location.pathname;
+  var fixedDesc  = 'Watch HD videos free — instant stream, no signup. Updated daily.';
+  var fixedUrl   = location.origin + location.pathname;
   
   function setMeta(prop, content, useName) {
     var attr = useName ? 'name' : 'property';
@@ -271,7 +271,7 @@
     }
   }
   
-  // Update meta on every page load (even no ?v=)
+  // ALWAYS set generic meta — never expose video title
   document.title = fixedTitle;
   setMeta('og:title', fixedTitle);
   setMeta('twitter:title', fixedTitle, true);
@@ -282,6 +282,7 @@
   setMeta('og:image:width', '1280');
   setMeta('og:image:height', '720');
   setMeta('og:image:type', 'image/jpeg');
+  setMeta('og:image:alt', fixedTitle);
   setMeta('twitter:image', fixedThumb, true);
 })();
 </script>
