@@ -7,25 +7,25 @@
   <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1" />
   <meta name="googlebot" content="index, follow" />
   <meta name="bingbot" content="index, follow" />
-  <meta name="description" content="Watch xnxx sex video hot video full HD — Free porn videos, xnxxx sex, hot sex tube, xxx video, free porno. Updated daily, no signup, instant stream." />
-  <meta name="keywords" content="xnxx, xnxxx, sex video, hot video, xxx, porn, porno, free porn, hd porn, big tits, milf, bbw, teen, anal, blowjob, lesbian, amateur, mature, japanese, indian, ebony, asian, cumshot, creampie, gangbang, threesome, mature, mom, stepmom, big ass, big dick, shemale, tranny, fisting, orgy, dp, doggystyle, handjob, squirt, pov, virtual reality, vr, 4k, 1080p, 720p, hq, full video, free, watch online, stream" />
-  <meta property="og:title" content="xnxx sex video hot Video — Free HD Porn Tube" />
-  <meta property="og:description" content="Watch xnxx sex video hot video full HD — Free porn videos, xnxxx, hot sex tube, big tits, milf, bbw & more. Free stream, no signup." />
+  <meta name="description" content="Watch HD videos free — instant stream, no signup. Updated daily." />
+  <meta name="keywords" content="hd video, free stream, watch online, instant play, no signup" />
+  <meta property="og:title" content="sexy.bd — Free HD Video Streaming" />
+  <meta property="og:description" content="Watch HD videos free — instant stream, no signup. Updated daily." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://sexy.linkpc.net/" />
-  <meta property="og:image" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/360000/360048/hd/1.jpg" />
-  <meta property="og:image:secure_url" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/360000/360048/hd/1.jpg" />
+  <meta property="og:image" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/359000/359791/hd/1.jpg" />
+  <meta property="og:image:secure_url" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/359000/359791/hd/1.jpg" />
   <meta property="og:image:width" content="1280" />
   <meta property="og:image:height" content="720" />
   <meta property="og:image:type" content="image/jpeg" />
   <meta property="og:image:alt" content="Watch HD Videos — sexy.bd" />
-  <meta name="twitter:image" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/360000/360048/hd/1.jpg" />
+  <meta name="twitter:image" content="https://sexy-cdn-proxy.biplob420vai.workers.dev/t/359000/359791/hd/1.jpg" />
   <meta name="twitter:card" content="summary_large_image" />
-  <meta name="twitter:title" content="xnxx sex video hot Video — Free HD Porn" />
-  <meta name="twitter:description" content="Watch xnxx sex video hot video full HD — Free porn, xnxxx, big tits, milf, bbw. Stream now, no signup." />
+  <meta name="twitter:title" content="sexy.bd — Free HD Video Streaming" />
+  <meta name="twitter:description" content="Watch HD videos free — instant stream, no signup. Updated daily." />
   <link rel="canonical" href="https://sexy.linkpc.net/" />
   <meta name="color-scheme" content="dark" />
-  <title>xnxx sex video hot Video — Watch Free HD Porn</title>
+  <title>sexy.bd — Free HD Video Streaming</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AC%3C/text%3E%3C/svg%3E" />
   <style>
     :root {
@@ -250,27 +250,20 @@
     }
   </style>
 
-<!-- Smart per-video OG meta for ?v=<id> — synchronous, runs before FB scraper reads meta -->
+<!-- Fixed single thumbnail (9th video) — no per-video dynamic -->
 <script>
 (function() {
-  var params = new URLSearchParams(location.search);
-  var vid = params.get('v');
-  if (!vid) return;
-  
-  // Derive thumbnail URLs from video ID (no fetch needed)
-  var bucket = Math.floor(parseInt(vid, 10) / 1000) * 1000;
-  var thumbHd        = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/t/' + bucket + '/' + vid + '/hd/1.jpg';
-  var thumb720       = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/t/' + bucket + '/' + vid + '/720p/1.jpg';
-  var thumbFallback  = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/t/' + bucket + '/' + vid + '/640x360/1.jpg';
-  var videoStream    = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/v/' + vid + '.mp4';
-  var shareUrl       = location.origin + location.pathname + '?v=' + vid;
+  // Use the 9th video's HD thumbnail for ALL shares
+  var fixedThumb = 'https://sexy-cdn-proxy.biplob420vai.workers.dev/t/359000/359791/hd/1.jpg';
+  var fixedTitle = 'sexy.bd — Free HD Video Streaming';
+  var fixedDesc = 'Watch HD videos free — instant stream, no signup. Updated daily.';
+  var fixedUrl = location.origin + location.pathname;
   
   function setMeta(prop, content, useName) {
     var attr = useName ? 'name' : 'property';
     var el = document.querySelector('meta[' + attr + '="' + prop + '"]');
-    if (el) {
-      el.setAttribute('content', content);
-    } else {
+    if (el) el.setAttribute('content', content);
+    else {
       var m = document.createElement('meta');
       m.setAttribute(attr, prop);
       m.setAttribute('content', content);
@@ -278,42 +271,18 @@
     }
   }
   
-  // === SYNCHRONOUS — runs before FB scraper paints ===
-  setMeta('og:type', 'video.other');
-  setMeta('og:title', 'HD Video #' + vid);
-  setMeta('og:description', 'Watch full HD video #' + vid + ' · free stream · no signup · instant play');
-  setMeta('og:url', shareUrl);
-  setMeta('og:image', thumbHd);
-  setMeta('og:image:secure_url', thumbHd);
+  // Update meta on every page load (even no ?v=)
+  document.title = fixedTitle;
+  setMeta('og:title', fixedTitle);
+  setMeta('twitter:title', fixedTitle, true);
+  setMeta('og:description', fixedDesc);
+  setMeta('twitter:description', fixedDesc, true);
+  setMeta('og:image', fixedThumb);
+  setMeta('og:image:secure_url', fixedThumb);
   setMeta('og:image:width', '1280');
   setMeta('og:image:height', '720');
   setMeta('og:image:type', 'image/jpeg');
-  setMeta('og:image:alt', 'Video ' + vid + ' preview');
-  setMeta('og:video', videoStream);
-  setMeta('og:video:secure_url', videoStream);
-  setMeta('og:video:type', 'video/mp4');
-  setMeta('og:video:width', '854');
-  setMeta('og:video:height', '480');
-  setMeta('twitter:card', 'player');
-  setMeta('twitter:title', 'HD Video #' + vid, true);
-  setMeta('twitter:description', 'Watch full HD video free', true);
-  setMeta('twitter:image', thumbHd, true);
-  setMeta('twitter:player:stream', videoStream, true);
-  setMeta('twitter:player:stream:content_type', 'video/mp4', true);
-  setMeta('twitter:player:width', '854', true);
-  setMeta('twitter:player:height', '480', true);
-  
-  // ASYNC upgrade: replace title with real video title (from share-worker)
-  fetch('https://sexy-share.biplob420vai.workers.dev/v/' + vid)
-    .then(function(r) { return r.text(); })
-    .then(function(t) {
-      var tm = t.match(/<meta property="og:title" content="([^"]+)"/);
-      if (tm && tm[1]) {
-        document.title = tm[1];
-        setMeta('og:title', tm[1]);
-        setMeta('twitter:title', tm[1], true);
-      }
-    }).catch(function() {});
+  setMeta('twitter:image', fixedThumb, true);
 })();
 </script>
 
@@ -329,7 +298,7 @@
 
   <main>
     <!-- SEO h1: visually hidden but crawlers see it for ranking -->
-    <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">xnxx sex video hot Video — Free HD Porn Tube</h1>
+    <h1 style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">sexy.bd — Free HD Video Streaming</h1>
 
     <div id="grid" class="grid">
       <div class="loading"><div class="spinner"></div></div>
