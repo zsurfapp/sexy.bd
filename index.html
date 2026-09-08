@@ -164,6 +164,25 @@
     }
     .card:hover .title-bar { opacity: 1; }
 
+    /* Share button — appears on hover, top-right corner */
+    .card .share-btn {
+      position: absolute; top: 6px; right: 6px;
+      width: 28px; height: 28px;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 50%;
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      opacity: 0; transition: opacity .2s, background .2s, transform .2s;
+      z-index: 2;
+    }
+    .card:hover .share-btn { opacity: 1; }
+    .card .share-btn:hover { background: rgba(255, 45, 110, 0.85); transform: scale(1.1); }
+    .card .share-btn.copied { background: #00c853; }
+
     /* Ad slot — full-width inline banner */
     .ad-slot {
       grid-column: 1 / -1;
@@ -440,10 +459,30 @@
           ${v.duration ? `<div class="duration">${fmtDur(v.duration)}</div>` : ''}
           <div class="play-icon">${playIconSVG()}</div>
           <div class="title-bar">${(v.title || '').replace(/</g,'&lt;')}</div>
+          <button class="share-btn" data-share="${v.id}" aria-label="Share">⤴</button>
         </div>${adSlot}`;
       }).join('');
       grid.querySelectorAll('.card').forEach(card => {
-        card.addEventListener('click', () => playVideo(list[+card.dataset.i]));
+        card.addEventListener('click', (e) => {
+          // Ignore click on share button
+          if (e.target.closest('.share-btn')) return;
+          playVideo(list[+card.dataset.i]);
+        });
+      });
+      // Share button: copy share URL with preview
+      grid.querySelectorAll('.share-btn').forEach(btn => {
+        btn.addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const id = btn.getAttribute('data-share');
+          const url = `${location.origin}${location.pathname}?v=${id}`;
+          try {
+            await navigator.clipboard.writeText(url);
+            btn.classList.add('copied');
+            setTimeout(() => btn.classList.remove('copied'), 1500);
+          } catch (err) {
+            prompt('Copy this URL:', url);
+          }
+        });
       });
       // Load Adsterra script once per page (only if not already loaded)
       injectAdsterra();
@@ -511,7 +550,34 @@
       render();
     });
 
-    load();
+    // Auto-play video if ?v=<id> query param (deep link from share preview)
+    function autoPlayFromUrl() {
+      const params = new URLSearchParams(location.search);
+      const vid = params.get('v');
+      if (vid && /^\d{4,7}$/.test(vid)) {
+        // Wait for videos to load, then auto-play the requested one
+        const tryPlay = () => {
+          const found = state.videos.find(v => v.id === vid);
+          if (found) {
+            playVideo(found);
+            // Clean URL (remove ?v= param) without reload
+            params.delete('v');
+            const newQs = params.toString();
+            const newUrl = location.pathname + (newQs ? '?' + newQs : '');
+            history.replaceState(null, '', newUrl);
+          } else if (state.videos.length === 0) {
+            // Videos not loaded yet, retry
+            setTimeout(tryPlay, 200);
+          } else {
+            // Video not in list — show 404-like message but don't break UX
+            console.warn('Video not found:', vid);
+          }
+        };
+        tryPlay();
+      }
+    }
+
+    load().then(autoPlayFromUrl);
     initAds();
   })();
   </script>
